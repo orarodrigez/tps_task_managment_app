@@ -122,15 +122,15 @@
 }
 
 .col-title {
-  width: 500px;
+  width: 300px;
   font-weight: 600;
   flex-shrink: 0;
 }
 
 .col-description {
-  width: 140px;
-  max-width: 140px;
-  flex-shrink: 0;
+  width: 8px;
+  max-width: 80;
+ 
 }
 
 .col-due {
