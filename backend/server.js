@@ -29,7 +29,7 @@ app.get('/api/tasks', async (req, res) => {
 // POST /api/tasks - Create a new task
 app.post('/api/tasks', async (req, res) => {
   try {
-    const { title, description } = req.body;
+    const { title, description, dueDate } = req.body;
     
     if (!title) {
       return res.status(400).json({ error: 'Title is required' });
@@ -37,7 +37,8 @@ app.post('/api/tasks', async (req, res) => {
 
     const task = await db.createTask({
       title,
-      description: description || ''
+      description: description || '',
+      dueDate: dueDate || null
     });
 
     res.status(201).json(task);
@@ -50,12 +51,13 @@ app.post('/api/tasks', async (req, res) => {
 app.put('/api/tasks/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, completed } = req.body;
+    const { title, description, completed, dueDate } = req.body;
 
     const task = await db.updateTask(id, {
       title,
       description,
-      completed
+      completed,
+      dueDate
     });
 
     if (!task) {
@@ -63,6 +65,23 @@ app.put('/api/tasks/:id', async (req, res) => {
     }
 
     res.json(task);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// DELETE /api/tasks/:id - Delete a task
+app.delete('/api/tasks/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const success = await db.deleteTask(id);
+
+    if (!success) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+
+    res.json({ message: 'Task deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

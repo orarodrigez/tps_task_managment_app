@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import './TaskForm.css';
 
-function TaskForm({ onAddTask }) {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+function TaskForm({ onAddTask, onCancel, editingTask }) {
+  const [title, setTitle] = useState(editingTask?.title || '');
+  const [description, setDescription] = useState(editingTask?.description || '');
+  const [dueDate, setDueDate] = useState(editingTask?.dueDate || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const isEditMode = !!editingTask;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,10 +20,12 @@ function TaskForm({ onAddTask }) {
     try {
       await onAddTask({
         title: title.trim(),
-        description: description.trim()
+        description: description.trim(),
+        dueDate: dueDate || null
       });
       setTitle('');
       setDescription('');
+      setDueDate('');
     } catch (error) {
       console.error('Error adding task:', error);
     } finally {
@@ -31,7 +35,7 @@ function TaskForm({ onAddTask }) {
 
   return (
     <form className="task-form" onSubmit={handleSubmit}>
-      <h2>Add New Task</h2>
+      <h2>{isEditMode ? 'Edit Task' : 'Add New Task'}</h2>
       <div className="form-group">
         <input
           type="text"
@@ -49,16 +53,39 @@ function TaskForm({ onAddTask }) {
           onChange={(e) => setDescription(e.target.value)}
           disabled={isSubmitting}
           className="form-textarea"
-          rows="3"
+          rows="4"
         />
       </div>
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="form-button"
-      >
-        {isSubmitting ? 'Adding...' : 'Add Task'}
-      </button>
+      <div className="form-group">
+        <label htmlFor="dueDate" className="form-label">Due Date (Optional)</label>
+        <input
+          id="dueDate"
+          type="datetime-local"
+          value={dueDate}
+          onChange={(e) => setDueDate(e.target.value)}
+          disabled={isSubmitting}
+          className="form-input"
+        />
+      </div>
+      <div className="form-buttons">
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="form-button submit-button"
+        >
+          {isSubmitting ? (isEditMode ? 'Updating...' : 'Adding...') : (isEditMode ? 'Update Task' : 'Add Task')}
+        </button>
+        {onCancel && (
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={isSubmitting}
+            className="form-button cancel-button"
+          >
+            Cancel
+          </button>
+        )}
+      </div>
     </form>
   );
 }

@@ -23,7 +23,9 @@ class Database {
           description TEXT,
           completed INTEGER DEFAULT 0,
           createdAt TEXT NOT NULL,
-          updatedAt TEXT NOT NULL
+          updatedAt TEXT NOT NULL,
+          dueDate TEXT,
+          completedAt TEXT
         )
       `);
     });
@@ -41,7 +43,9 @@ class Database {
             description: row.description,
             completed: Boolean(row.completed),
             createdAt: row.createdAt,
-            updatedAt: row.updatedAt
+            updatedAt: row.updatedAt,
+            dueDate: row.dueDate || null,
+            completedAt: row.completedAt || null
           }));
           resolve(tasks);
         }
@@ -55,8 +59,8 @@ class Database {
     
     return new Promise((resolve, reject) => {
       this.db.run(
-        'INSERT INTO tasks (id, title, description, completed, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?)',
-        [id, data.title, data.description, 0, now, now],
+        'INSERT INTO tasks (id, title, description, completed, createdAt, updatedAt, dueDate, completedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        [id, data.title, data.description, 0, now, now, data.dueDate || null, null],
         function(err) {
           if (err) {
             reject(err);
@@ -67,7 +71,9 @@ class Database {
               description: data.description,
               completed: false,
               createdAt: now,
-              updatedAt: now
+              updatedAt: now,
+              dueDate: data.dueDate || null,
+              completedAt: null
             });
           }
         }
@@ -89,9 +95,16 @@ class Database {
         updates.push('description = ?');
         params.push(data.description);
       }
+      if (data.dueDate !== undefined) {
+        updates.push('dueDate = ?');
+        params.push(data.dueDate || null);
+      }
       if (data.completed !== undefined) {
         updates.push('completed = ?');
         params.push(data.completed ? 1 : 0);
+        // Set completedAt when marking as completed, clear it when unmarking
+        updates.push('completedAt = ?');
+        params.push(data.completed ? now : null);
       }
 
       updates.push('updatedAt = ?');
@@ -118,12 +131,26 @@ class Database {
                 description: row.description,
                 completed: Boolean(row.completed),
                 createdAt: row.createdAt,
-                updatedAt: row.updatedAt
+                updatedAt: row.updatedAt,
+                dueDate: row.dueDate || null,
+                completedAt: row.completedAt || null
               });
             } else {
               resolve(null);
             }
           });
+        }
+      });
+    });
+  }
+
+  deleteTask(id) {
+    return new Promise((resolve, reject) => {
+      this.db.run('DELETE FROM tasks WHERE id = ?', [id], function(err) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(this.changes > 0);
         }
       });
     });

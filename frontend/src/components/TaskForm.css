@@ -16,6 +16,14 @@
   margin-bottom: 15px;
 }
 
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  color: #333;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
 .form-input,
 .form-textarea {
   width: 100%;
@@ -61,6 +69,28 @@
 .form-button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.form-buttons .submit-button {
+  flex: 1;
+  width: auto;
+}
+
+.form-buttons .cancel-button {
+  flex: 1;
+  width: auto;
+  background: #ccc;
+  color: #333;
+}
+
+.form-buttons .cancel-button:hover:not(:disabled) {
+  background: #bbb;
 }
 
 @media (max-width: 768px) {
