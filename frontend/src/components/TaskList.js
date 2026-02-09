@@ -3,14 +3,16 @@ import TaskItem from './TaskItem';
 import './TaskList.css';
 
 function TaskList({ tasks, onToggleComplete, onUpdateTask, onEditTask, onDeleteTask, searchTerm, onSearchChange, onSort, sortColumn, sortDirection }) {
-  if (tasks.length === 0) {
+ 
+
+  
+   if (tasks.length === 0 && searchTerm.trim() === '') {
     return (
       <div className="empty-state">
-        <p>📝 No tasks yet. Create one to get started!</p>
+        <p> No tasks yet. Create one to get started!</p>
       </div>
     );
   }
-
   const completedCount = tasks.filter(task => task.completed).length;
   const progressPercentage = Math.round((completedCount / tasks.length) * 100);
 

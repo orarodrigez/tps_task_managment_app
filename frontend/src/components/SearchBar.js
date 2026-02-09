@@ -6,7 +6,7 @@ function SearchBar({ searchTerm, onSearchChange }) {
     <div className="search-bar">
       <input
         type="text"
-        placeholder="🔍 Search tasks by title..."
+        placeholder=" Search tasks by title..."
         value={searchTerm}
         onChange={(e) => onSearchChange(e.target.value)}
         className="search-input"
